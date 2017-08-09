@@ -1,25 +1,21 @@
 export default function (children) {
     
-    var self = {};
+    let self = {};
     
-
     /* Private attributes */
-    const children_acc = (children == null) ? defaultChildren : children;
+    const getChildren = (children == null) ? defaultChildren : children;
     
-    
-    /********************/
-    /* PRIVATE FUNCTION */
-    /********************/
+    // PRIVATE FUNCTION
     function defaultChildren(d) {
 	return d.children;
     }
     
-    
-    /*******************/
-    /* PUBLIC FUNCTION */
-    /*******************/
+    // PUBLIC FUNCTION
+    /**
+     * 
+     */
     self.traverseTreePostOrder = function(root, callback) {
-	const children = children_acc(root);
+	const children = getChildren(root);
 	if (children) {
 	    children.forEach(function(child){
 		self.traverseTreePostOrder(child, callback);
@@ -27,5 +23,22 @@ export default function (children) {
 	}
 	callback(root);
     };
+    
+    /**
+     *
+     */
+    self.addParent = function (root) {
+	root.parent = null;
+	var cb = function( node ){
+	    const children = getChildren(node);
+	    if (children) {
+		children.forEach(function(child){
+		    child.parent = node;
+		});
+	    }
+	};
+	self.traverseTreePostOrder(root, cb);
+    };
+    
     return self;
 }
