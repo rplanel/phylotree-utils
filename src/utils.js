@@ -22,12 +22,12 @@ export default function (children) {
      * Invokes the specified function for node and each descendant in post-order traversal, 
      * such that a given node is only visited after all of its descendants have already been visited.
      */
-    self.eachAfter = function(root, callback) {
+    self.eachAfter = function(node, callback) {
 	const cb = function(child){
 	    self.eachAfter(child, callback);
 	};
-	loopChildren(root, cb);
-	callback(root);
+	loopChildren(node, cb);
+	callback(node);
     };
 
     self.reduceAfter = function(node, callback, acc) {
@@ -49,10 +49,10 @@ export default function (children) {
     };
     
     self.reduceBefore = function(node, callback, acc) {
-	acc = callback(acc, node);
 	const cb = function(child){
 	    acc = self.reduceBefore(child, callback, acc);
 	};
+	acc = callback(acc, node);
 	loopChildren(node, cb);
 	return acc;
     };
@@ -62,17 +62,17 @@ export default function (children) {
     /**
      *
      */
-    self.addParent = function (root) {
-	root.parent = null;
+    self.addParent = function (node) {
+	if (!node.parent) {
+	    node.parent = null;
+	}
 	const cb = function( node ){
-	    const children = getChildren(node);
-	    if (children) {
-		children.forEach(function(child){
-		    child.parent = node;
-		});
-	    }
+	    const cb_set_parent = function(child) {
+		child.parent = node;
+	    };
+	    loopChildren(node, cb_set_parent);
 	};
-	self.eachAfter(root, cb);
+	self.eachAfter(node, cb);
     };
     
     return self;
