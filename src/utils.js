@@ -48,6 +48,14 @@ export default function (children) {
 	loopChildren(node, cb);
     };
     
+    self.reduceBefore = function(node, callback, acc) {
+	acc = callback(acc, node);
+	const cb = function(child){
+	    acc = self.reduceBefore(child, callback, acc);
+	};
+	loopChildren(node, cb);
+	return acc;
+    };
     
     
     
