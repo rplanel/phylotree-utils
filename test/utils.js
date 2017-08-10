@@ -1,9 +1,6 @@
 var tape  = require("tape");
 var phylotree_utils = require("../");
 
-
-
-
 tape("Tree post order traversal (eachAfter)", function(test){
     var tree = {id: 1, children: [ {id: 2,children: [ {id: 4}, {id: 5} ]}, {id: 3}]};
     var node_ids_traversal = [];
@@ -106,7 +103,6 @@ tape("Test reduceAfter", function(test){
     
     
 });
-
 tape("Test reduceBefore", function(test){
     var tree = {id: 1, children: [ {id: 2,children: [ {id: 4}, {id: 5} ]}, {id: 3}]};
     const TreeUtils = phylotree_utils.utils();

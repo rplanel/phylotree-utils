@@ -23,21 +23,19 @@ export default function (children) {
      * such that a given node is only visited after all of its descendants have already been visited.
      */
     self.eachAfter = function(node, callback) {
-	const cb = function(child){
+	loopChildren(node, child => {
 	    self.eachAfter(child, callback);
-	};
-	loopChildren(node, cb);
+	});
 	callback(node);
     };
-
-    self.reduceAfter = function(node, callback, acc) {
-	const cb = function(child){
+    
+    self.reduceAfter = function (node, callback, acc) {
+	loopChildren(node, child => {
 	    acc = self.reduceAfter(child, callback, acc);
-	};
-	loopChildren(node, cb);
+	});
 	return callback(acc, node);
     };
-
+    
     
 
     self.eachBefore = function(node, callback) {
@@ -58,6 +56,9 @@ export default function (children) {
     };
     
     
+    self.filter = function () {
+	
+    };
     
     /**
      *
