@@ -22,7 +22,7 @@
 	"d3"
     ],
     "author": "Rémi Planel",
-    "license": "ISC",
+    "license": "GPL-3.0",
     "bugs": {
 	"url": "https://github.com/rplanel/phylotree-utils/issues"
     },
