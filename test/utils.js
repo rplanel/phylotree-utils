@@ -122,8 +122,108 @@ tape("Test reduceBefore", function(test){
     };
     var array_concat = [];
     array_concat = TreeUtils.reduceBefore(tree, concat_array_ids, array_concat);
-    test.deepEqual(array_concat, [1, 2, 4, 5, 3], array_concat);
+    test.deepEqual(array_concat, [1, 2, 4, 5, 3]);
     test.end();
     
+    
+});
+tape("Test filter nodes",(test) => {
+
+    var tree = {id: 1, children: [ {id: 2,children: [ {id: 4}, {id: 5} ]}, {id: 3}]};
+    const TreeUtils = phylotree_utils.utils();
+    
+    var res = TreeUtils.filter(tree, (node ) => {
+	return node.id < 3;
+    }).map((node) => {
+	return node.id;
+    });
+    test.deepEqual(res, [1, 2]);
+
+    var res2 = TreeUtils.filter(tree, (node ) => {
+	return node.id >= 3;
+    }).map((node) => {
+	return node.id;
+    });
+    test.deepEqual(res2, [4, 5, 3]);
+    test.end();
+    
+});
+
+tape("Test each ancestor",(test) => {
+
+
+    const node5 = {id:5};
+    const node3 = {id:3};
+    var   tree = {id: 1, children: [ {id: 2,children: [ {id: 4}, node5 ]}, node3]};
+    const TreeUtils = phylotree_utils.utils();
+    TreeUtils.addParent(tree);
+    var ancestor_record = [];
+    TreeUtils.eachAncestor(node5, (node) => {
+	ancestor_record.push(node.id);
+    });
+    
+    test.deepEqual(ancestor_record, [2,1]);
+
+    ancestor_record = [];
+    TreeUtils.eachAncestor(node3, (node) => {
+	ancestor_record.push(node.id);
+    });
+    test.deepEqual(ancestor_record, [1]);
+    
+    test.end();
+    
+});
+
+
+tape("Test reduce ancestor",(test) => {
+    
+    
+    const node5 = {id:5};
+    const node3 = {id:3};
+    var   tree = {id: 1, children: [ {id: 2,children: [ {id: 4}, node5 ]}, node3]};
+    const TreeUtils = phylotree_utils.utils();
+    TreeUtils.addParent(tree);
+
+    const res = TreeUtils.reduceAncestor(node5, (acc, node) => {
+	acc.push(node.id);
+	return acc;
+    }, []);
+    
+    test.deepEqual(res, [2,1]);
+    
+    test.end();
+    
+});
+
+
+tape("Test Filter ancestor",(test) => {
+    const node5 = {id:5};
+    const node3 = {id:3};
+    var   tree = {id: 1, children: [ {id: 2,children: [ {id: 4}, node5 ]}, node3]};
+    const TreeUtils = phylotree_utils.utils();
+    TreeUtils.addParent(tree);
+    const res = TreeUtils.filterAncestor(node5, (node) => {
+    	return node.id === 1;
+    }).map((node) => {
+    	return node.id;
+    });
+    
+    test.deepEqual(res, [1]);
+    
+    
+    // Get nextToLast
+    const res2 = TreeUtils.filterAncestor(node5, (parent) => {
+	if (parent.parent) {
+	    return parent.parent.parent == null;
+	}
+	else {
+	    return false;
+	}
+    }).map((node) => {
+	return node.id;
+    });
+    test.deepEqual(res2, [2]);
+    
+    test.end();
     
 });

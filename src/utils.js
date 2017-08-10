@@ -6,11 +6,18 @@ export default function (children) {
     const getChildren = (children == null) ? defaultChildren : children;
     
     // PRIVATE FUNCTION
-    function defaultChildren(d) {
-	return d.children;
+    function defaultChildren(node) {
+	return node.children;
+    }
+
+
+    function forParent(node, callback) {
+	if (node.parent) {
+	    callback(node.parent);
+	}
     }
     
-    function loopChildren(node, callback) {
+    function forEachChildren(node, callback) {
 	const children = getChildren(node);
 	if (children) {
 	    children.forEach(callback);
@@ -23,42 +30,73 @@ export default function (children) {
      * such that a given node is only visited after all of its descendants have already been visited.
      */
     self.eachAfter = function(node, callback) {
-	loopChildren(node, child => {
+	forEachChildren(node, child => {
 	    self.eachAfter(child, callback);
 	});
 	callback(node);
     };
     
     self.reduceAfter = function (node, callback, acc) {
-	loopChildren(node, child => {
+	forEachChildren(node, child => {
 	    acc = self.reduceAfter(child, callback, acc);
 	});
 	return callback(acc, node);
     };
     
     
-
     self.eachBefore = function(node, callback) {
-	const cb = function(child){
-	    self.eachBefore(child, callback);
-	};
 	callback(node);
-	loopChildren(node, cb);
+	forEachChildren(node, (child) => {
+	    self.eachBefore(child, callback);
+	});
     };
     
     self.reduceBefore = function(node, callback, acc) {
-	const cb = function(child){
-	    acc = self.reduceBefore(child, callback, acc);
-	};
 	acc = callback(acc, node);
-	loopChildren(node, cb);
+	forEachChildren(node, (child) => {
+	    acc = self.reduceBefore(child, callback, acc);
+	});
 	return acc;
     };
     
-    
-    self.filter = function () {
-	
+    self.filter = function (node, callback) {
+	return self.reduceBefore(node, (acc, node) => {
+	    if (callback(node)) {
+		acc.push(node);
+	    }
+	    return acc;
+	}, []);
     };
+    
+    self.eachAncestor = function (node, callback) {
+	forParent(node, (parent) => {
+	    callback(parent);
+	    self.eachAncestor(parent, callback);
+	});
+    };
+    
+    self.reduceAncestor = function (node, callback, acc) {
+	forParent(node, (parent) => {
+	    acc = callback(acc, parent);
+	    acc = self.reduceAncestor(parent, callback, acc);
+
+
+	});
+	return acc;
+    };
+    
+    self.filterAncestor = function(node, callback) {
+	return self.reduceAncestor(node, (acc, parent) => {
+	    if (callback(parent)) {
+		acc.push(parent);
+		return acc;
+	    }
+	    else {
+		return acc;
+	    }
+	}, []);
+    };
+
     
     /**
      *
@@ -71,10 +109,11 @@ export default function (children) {
 	    const cb_set_parent = function(child) {
 		child.parent = node;
 	    };
-	    loopChildren(node, cb_set_parent);
+	    forEachChildren(node, cb_set_parent);
 	};
 	self.eachAfter(node, cb);
     };
+
     
     return self;
 }
