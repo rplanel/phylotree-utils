@@ -162,13 +162,13 @@ tape("Test each ancestor",(test) => {
 	ancestor_record.push(node.id);
     });
     
-    test.deepEqual(ancestor_record, [2,1]);
+    test.deepEqual(ancestor_record, [5,2,1]);
 
     ancestor_record = [];
     TreeUtils.eachAncestor(node3, (node) => {
 	ancestor_record.push(node.id);
     });
-    test.deepEqual(ancestor_record, [1]);
+    test.deepEqual(ancestor_record, [3,1]);
     
     test.end();
     
@@ -189,7 +189,7 @@ tape("Test reduce ancestor",(test) => {
 	return acc;
     }, []);
     
-    test.deepEqual(res, [2,1]);
+    test.deepEqual(res, [5,2,1]);
     
     test.end();
     
@@ -223,6 +223,19 @@ tape("Test Filter ancestor",(test) => {
 	return node.id;
     });
     test.deepEqual(res2, [2]);
+
+
+    const res3 = TreeUtils.filterAncestor(node3, (parent) => {
+	if (parent.parent) {
+	    return parent.parent.parent == null;
+	}
+	else {
+	    return false;
+	}
+    }).map((node) => {
+	return node.id;
+    });
+    test.deepEqual(res3, [3]);
     
     test.end();
     

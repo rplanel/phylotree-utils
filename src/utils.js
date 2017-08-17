@@ -12,8 +12,9 @@ export default function (children) {
 
 
     function forParent(node, callback) {
-	if (node.parent) {
-	    callback(node.parent);
+	const parent = node.parent;
+	if (parent) {
+	    callback(parent);
 	}
     }
     
@@ -69,24 +70,22 @@ export default function (children) {
     };
     
     self.eachAncestor = function (node, callback) {
+	callback(node);
 	forParent(node, (parent) => {
-	    callback(parent);
 	    self.eachAncestor(parent, callback);
 	});
     };
     
     self.reduceAncestor = function (node, callback, acc) {
+	acc = callback(acc, node);
 	forParent(node, (parent) => {
-	    acc = callback(acc, parent);
 	    acc = self.reduceAncestor(parent, callback, acc);
-
-
 	});
 	return acc;
     };
     
     self.filterAncestor = function(node, callback) {
-	return self.reduceAncestor(node, (acc, parent) => {
+	return self.reduceAncestor(node, (acc, parent) =>  {
 	    if (callback(parent)) {
 		acc.push(parent);
 		return acc;
