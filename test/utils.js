@@ -1,5 +1,64 @@
 var tape  = require("tape");
 var phylotree_utils = require("../");
+function concatArrayIds(acc, node) {
+    acc.push(node.id);
+    return acc;
+};
+
+
+function getBigTree() {
+    const node7  = {id:7};
+    const node2 = {
+	id: 2,
+	children: [
+	    {
+		id: 3,
+		children: [
+		    {
+			id: 4
+		    },
+		    {
+			id: 5
+		    }
+		]
+	    },
+	    {
+		id: 8,
+		children: [
+		    {
+			id: 6
+		    },
+		    node7
+		]
+	    }
+	]
+    };
+    const node13 = {id:13};
+    return {
+	id:1,
+	children: [
+	    node2,
+	    {
+		id: 9,
+		children: [
+		    {
+			id: 10,
+			children: [
+			    {
+				id: 11
+			    },
+			    {
+				id: 12
+			    }
+			]
+		    },
+		    node13
+		]
+	    }
+	]
+    };
+}
+
 
 tape("Tree post order traversal (eachAfter)", function(test){
     var tree = {id: 1, children: [ {id: 2,children: [ {id: 4}, {id: 5} ]}, {id: 3}]};
@@ -13,6 +72,7 @@ tape("Tree post order traversal (eachAfter)", function(test){
     test.equal(traversal_signature,"4;5;2;3;1");
     test.end();
 });
+
 tape("Tree pre order traversal (eachBefore)", function(test){
     var tree = {id: 1, children: [ {id: 2,children: [ {id: 4}, {id: 5} ]}, {id: 3}]};
     var node_ids_traversal = [];
@@ -25,6 +85,7 @@ tape("Tree pre order traversal (eachBefore)", function(test){
     test.equal(traversal_signature,"1;2;4;5;3");
     test.end();
 });
+
 tape("Chidlren accessor", function(test){
     var tree = {
 	id: 1,
@@ -59,6 +120,7 @@ tape("Chidlren accessor", function(test){
     test.equal(traversal_signature,"4;5;2;3;1");
     test.end();
 });
+
 tape("Test addParent function",function(test){
     var tree = {id:1,children:[{id: 2,children: [{id: 4},{id:5}]},{id:3}]};
     var node_ids_traversal = [];
@@ -76,6 +138,7 @@ tape("Test addParent function",function(test){
     test.equal(traversal_signature,"4_2;5_2;2_1;3_1;1_null");
     test.end();
 });
+
 tape("Test reduceAfter", function(test){
     var tree = {id: 1, children: [ {id: 2,children: [ {id: 4}, {id: 5} ]}, {id: 3}]};
     const TreeUtils = phylotree_utils.utils();
@@ -89,12 +152,8 @@ tape("Test reduceAfter", function(test){
     var concat = TreeUtils.reduceAfter(tree, sumAccCb, "");
     test.equal(concat,"45231");
     
-    var concat_array_ids = function(acc, node) {
-	acc.push(node.id);
-	return acc;
-    };
     var array_concat = [];
-    array_concat = TreeUtils.reduceAfter(tree, concat_array_ids, array_concat);
+    array_concat = TreeUtils.reduceAfter(tree, concatArrayIds, array_concat);
     test.deepEqual(array_concat, [4, 5, 2, 3, 1], array_concat);
 
 
@@ -103,6 +162,7 @@ tape("Test reduceAfter", function(test){
     
     
 });
+
 tape("Test reduceBefore", function(test){
     var tree = {id: 1, children: [ {id: 2,children: [ {id: 4}, {id: 5} ]}, {id: 3}]};
     const TreeUtils = phylotree_utils.utils();
@@ -116,17 +176,14 @@ tape("Test reduceBefore", function(test){
     var concat = TreeUtils.reduceBefore(tree, sumAccCb, "");
     test.equal(concat,"12453");
     
-    var concat_array_ids = function(acc, node) {
-	acc.push(node.id);
-	return acc;
-    };
     var array_concat = [];
-    array_concat = TreeUtils.reduceBefore(tree, concat_array_ids, array_concat);
+    array_concat = TreeUtils.reduceBefore(tree, concatArrayIds, array_concat);
     test.deepEqual(array_concat, [1, 2, 4, 5, 3]);
     test.end();
     
     
 });
+
 tape("Test filter nodes",(test) => {
 
     var tree = {id: 1, children: [ {id: 2,children: [ {id: 4}, {id: 5} ]}, {id: 3}]};
@@ -174,7 +231,6 @@ tape("Test each ancestor",(test) => {
     
 });
 
-
 tape("Test reduce ancestor",(test) => {
     
     
@@ -194,7 +250,6 @@ tape("Test reduce ancestor",(test) => {
     test.end();
     
 });
-
 
 tape("Test Filter ancestor",(test) => {
     const node5 = {id:5};
@@ -239,4 +294,41 @@ tape("Test Filter ancestor",(test) => {
     
     test.end();
     
+});
+
+tape("Test root tree", (test) => {
+    const tree_a = getBigTree();
+    const TreeUtils    = phylotree_utils.utils();
+    const array_concat = TreeUtils.reduceBefore(tree_a, concatArrayIds, []);
+    test.deepEqual(array_concat,[ 1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13 ], "Tree get the right topology");
+
+    const node7 =  (TreeUtils.filter(tree_a, (node) => node.id === 7))[0];
+    test.equal(node7.id, 7, "Get the node 7");
+    const new_root = TreeUtils.rootTree(node7, tree_a);
+    const array_concat_7 = TreeUtils.reduceBefore(new_root, concatArrayIds, []);
+    test.deepEqual(array_concat_7,[ 1, 7, 8, 6, 2, 3, 4, 5, 9, 10, 11, 12, 13 ], "Root on the node 7 branch");
+
+    
+    // New tree
+    const tree_b = getBigTree();
+    const node2 =  (TreeUtils.filter(tree_b, (node) => node.id === 2))[0];
+    test.equal(node2.id, 2, "Get the node 2");
+    test.deepEqual(array_concat,[ 1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13 ], "Tree get the right topology");
+    const new_root_2      = TreeUtils.rootTree(node2, tree_b);
+    const array_concat_2  = TreeUtils.reduceBefore(new_root_2, concatArrayIds, []);
+    test.deepEqual(array_concat_2,[ 1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13 ], "Root on node 2 OK");
+
+
+
+    const tree_c = getBigTree();
+    const node1 =  (TreeUtils.filter(tree_c, (node) => node.id === 1))[0];
+    test.equal(node1.id, 1, "Get the node 1");
+    test.deepEqual(array_concat,[ 1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13 ], "Tree get the right topology");
+    const new_root_1      = TreeUtils.rootTree(node1, tree_c);
+    const array_concat_1  = TreeUtils.reduceBefore(new_root_1, concatArrayIds, []);
+    test.deepEqual(array_concat_2,[ 1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13 ], "Tree get the right topology");
+
+    
+    test.end();
+
 });
