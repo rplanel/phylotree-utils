@@ -1,9 +1,9 @@
 export default function (children) {
     
-    let self = {};
+    var self = {};
     
     /* Private attributes */
-    const getChildren = (children == null) ? defaultChildren : children;
+    var getChildren = (children == null) ? defaultChildren : children;
     
     // PRIVATE FUNCTION
     function defaultChildren(node) {
@@ -11,14 +11,14 @@ export default function (children) {
     }
 
     function forParent(node, callback) {
-	const parent = node.parent;
+	var parent = node.parent;
 	if (parent) {
 	    callback(parent);
 	}
     }
     
     function forEachChildren(node, callback) {
-	const children = getChildren(node);
+	var children = getChildren(node);
 	if (children) {
 	    children.forEach(callback);
 	}
@@ -59,14 +59,14 @@ export default function (children) {
      * such that a given node is only visited after all of its descendants have already been visited.
      */
     self.eachAfter = function(node, callback) {
-	forEachChildren(node, child => {
+	forEachChildren(node, function(child) {
 	    self.eachAfter(child, callback);
 	});
 	callback(node);
     };
     
     self.reduceAfter = function (node, callback, acc) {
-	forEachChildren(node, child => {
+	forEachChildren(node, function (child) {
 	    acc = self.reduceAfter(child, callback, acc);
 	});
 	return callback(acc, node);
@@ -74,21 +74,21 @@ export default function (children) {
         
     self.eachBefore = function(node, callback) {
 	callback(node);
-	forEachChildren(node, (child) => {
+	forEachChildren(node, function (child) {
 	    self.eachBefore(child, callback);
 	});
     };
     
     self.reduceBefore = function(node, callback, acc) {
 	acc = callback(acc, node);
-	forEachChildren(node, (child) => {
+	forEachChildren(node, function (child) {
 	    acc = self.reduceBefore(child, callback, acc);
 	});
 	return acc;
     };
     
     self.filter = function (node, callback) {
-	return self.reduceBefore(node, (acc, node) => {
+	return self.reduceBefore(node, function (acc, node) {
 	    if (callback(node)) {
 		acc.push(node);
 	    }
@@ -98,21 +98,21 @@ export default function (children) {
     
     self.eachAncestor = function (node, callback) {
 	callback(node);
-	forParent(node, (parent) => {
+	forParent(node, function (parent) {
 	    self.eachAncestor(parent, callback);
 	});
     };
     
     self.reduceAncestor = function (node, callback, acc) {
 	acc = callback(acc, node);
-	forParent(node, (parent) => {
+	forParent(node, function (parent) {
 	    acc = self.reduceAncestor(parent, callback, acc);
 	});
 	return acc;
     };
     
     self.filterAncestor = function(node, callback) {
-	return self.reduceAncestor(node, (acc, parent) =>  {
+	return self.reduceAncestor(node, function (acc, parent)  {
 	    if (callback(parent)) {
 		acc.push(parent);
 		return acc;
@@ -131,8 +131,8 @@ export default function (children) {
 	if (!node.parent) {
 	    node.parent = null;
 	}
-	const cb = function( node ){
-	    const cb_set_parent = function(child) {
+	var cb = function( node ){
+	    var cb_set_parent = function(child) {
 		child.parent = node;
 	    };
 	    forEachChildren(node, cb_set_parent);
@@ -149,7 +149,7 @@ export default function (children) {
 	}
 	else {
 	    // get the next to last node before the root
-	var next_to_last_list = self.filterAncestor(new_root, (node) => {
+	var next_to_last_list = self.filterAncestor(new_root, function (node) {
 	    if (node.parent) {
 		return node.parent.parent == null;
 	    }
@@ -159,7 +159,7 @@ export default function (children) {
 	});
 	
 	if (next_to_last_list.length === 1 ) {
-	    const next_to_last = next_to_last_list[0];
+	    var next_to_last = next_to_last_list[0];
 
 	    // get sibling of this next_to_last node
 	    var next_to_last_sibling = tree.children.find(function(elem){
