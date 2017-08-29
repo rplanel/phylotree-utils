@@ -332,3 +332,41 @@ tape("Test root tree", (test) => {
     test.end();
 
 });
+
+
+
+tape("Test reduceAfterLeft", (test) => {
+    const tree_a = getBigTree();
+    const TreeUtils    = phylotree_utils.utils();
+    const left_node = TreeUtils.reduceAfterLeft(tree_a, function(acc, left) {
+	if (!left.children) {
+		return left;
+	    }
+	    else {
+		return acc;
+	    }
+    }, null);
+    test.deepEqual(left_node.id, 4, "Get the left node");
+
+    
+    test.end();
+
+});
+
+tape("Test reduceAfterRight", (test) => {
+    const tree_a = getBigTree();
+    const TreeUtils = phylotree_utils.utils();
+    const node = TreeUtils.reduceAfterRight(tree_a, function(acc, child) {
+	if (!child.children) {
+		return child;
+	    }
+	    else {
+		return acc;
+	    }
+    }, null);
+    test.deepEqual(node.id, 13, "Get the left node");
+
+    
+    test.end();
+
+});

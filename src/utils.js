@@ -16,6 +16,22 @@ export default function (children) {
 	    callback(parent);
 	}
     }
+
+
+    function forLeftChildren(node, callback) {
+	var children = getChildren(node);
+	if (children) {
+	    callback(children[0]);
+	}
+    }
+
+    function forRightChildren(node, callback) {
+	var children = getChildren(node);
+	if (children) {
+	    callback(children[children.length - 1]);
+	}
+    }
+
     
     function forEachChildren(node, callback) {
 	var children = getChildren(node);
@@ -123,6 +139,28 @@ export default function (children) {
 	}, []);
     };
 
+    // self.eachAfterLeft = function(node, callback) {
+    // 	forLeftChildren(node, function(left_child) {
+    // 	    self.eachAfterLeft(left_child, callback);
+    // 	});
+    // 	callback(node);
+    // };
+
+    self.reduceAfterLeft = function (node, callback, acc) {
+	forLeftChildren(node, function (left_child) {
+	    acc = self.reduceAfterLeft(left_child, callback, acc);
+	});
+	return callback(acc, node);
+    };
+
+    self.reduceAfterRight = function (node, callback, acc) {
+	forRightChildren(node, function (right_child) {
+	    acc = self.reduceAfterRight(right_child, callback, acc);
+	});
+	return callback(acc, node);
+    };
+
+    
     
     /**
      *
