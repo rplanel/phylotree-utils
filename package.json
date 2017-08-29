@@ -2,15 +2,17 @@
     "name": "phylotree-utils",
     "version": "0.0.0",
     "description": "Set of functions facilitating manipulation and traversal of trees.",
-    "main": "index.js",
+    "main": "build/phylotree-utils.js",
     "module": "index",
     "jsnext:main": "index",
     "directories": {
 	"test": "test"
     },
     "scripts": {
-	"build": "rollup -f umd -n phylotree-utils -o build/phylotree-utils.js -- index.js",
-	"test" : "tape 'test/**/*.js'"
+	"build"     : "rollup -f umd -n phylotree-utils -o build/phylotree-utils.js -- index.js",
+	"pretest"   : "rm -rf build && mkdir build && rollup -f umd -n phylotree-utils -o build/phylotree-utils.js -- index.js",
+	"test"      : "tape 'test/**/*.js'",
+	"prepublish": "npm run test"
     },
     "repository": {
 	"type": "git",
@@ -28,7 +30,16 @@
     },
     "homepage": "https://github.com/rplanel/phylotree-utils#readme",
     "devDependencies": {
+	"eslint-config-standard": "^10.2.1",
+	"eslint-plugin-import": "^2.7.0",
+	"eslint-plugin-node": "^5.1.1",
+	"eslint-plugin-promise": "^3.5.0",
+	"eslint-plugin-standard": "^3.0.1",
 	"rollup": "^0.48.2",
+	"eslint": "^4.5.0",
 	"tape": "^4.8.0"
+    },
+    "dependencies": {
+
     }
 }
