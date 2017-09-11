@@ -229,7 +229,6 @@ export default function (children) {
 	    return new_root_node;
 	}
 	else {
-	    console.log(next_to_last_list);
 	    throw {
 		message: "Error while getting next to last ancestor",
 		name   : "ExceptionNextToLastAncestor"
