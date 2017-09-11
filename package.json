@@ -2,16 +2,17 @@
     "name": "phylotree-utils",
     "version": "0.0.0",
     "description": "Set of functions facilitating manipulation and traversal of trees.",
-    "main": "build/phylotree-utils.js",
+    "main": "index.js",
     "module": "index",
     "jsnext:main": "index",
     "directories": {
 	"test": "test"
     },
     "scripts": {
-	"build"     : "rollup -f umd -n phylotree-utils -o build/phylotree-utils.js -- index.js",
+	"build"     : "rollup -c",
 	"pretest"   : "rm -rf build && mkdir build && rollup -f umd -n phylotree-utils -o build/phylotree-utils.js -- index.js",
 	"test"      : "tape 'test/**/*.js'",
+	"watch": "rollup -c --watch",
 	"prepublish": "npm run test"
     },
     "repository": {
