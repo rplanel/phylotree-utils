@@ -296,10 +296,10 @@ tape("Test Filter ancestor", (test) => {
 
 
 tape("Test root tree", (test) => {
+    const TreeUtils = phylotree_utils.utils();
 
     // First test: root on node 7
     const tree_a = getBigTree();
-    const TreeUtils = phylotree_utils.utils();
     const array_concat = TreeUtils.reduceBefore(tree_a, concatArrayIds, []);
     test.deepEqual(array_concat, [1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13], "Tree get the right topology");
 
