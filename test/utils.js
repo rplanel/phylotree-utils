@@ -70,6 +70,7 @@ tape("Tree post order traversal (eachAfter)", function (test) {
         });
     var traversal_signature = node_ids_traversal.join(";");
     test.equal(traversal_signature, "4;5;2;3;1");
+
     test.end();
 });
 
@@ -84,11 +85,12 @@ tape("Tree pre order traversal (eachBefore)", function (test) {
         });
     var traversal_signature = node_ids_traversal.join(";");
     test.equal(traversal_signature, "1;2;4;5;3");
+
     test.end();
 });
 
 
-tape("Chidlren accessor", function (test) {
+tape("Children accessor", function (test) {
     var tree = {
         id: 1,
         childs: [
@@ -120,6 +122,7 @@ tape("Chidlren accessor", function (test) {
         });
     var traversal_signature = node_ids_traversal.join(";");
     test.equal(traversal_signature, "4;5;2;3;1");
+
     test.end();
 });
 
@@ -139,6 +142,7 @@ tape("Test addParent function", function (test) {
     });
     var traversal_signature = node_ids_traversal.join(";");
     test.equal(traversal_signature, "4_2;5_2;2_1;3_1;1_null");
+
     test.end();
 });
 
@@ -160,11 +164,7 @@ tape("Test reduceAfter", function (test) {
     array_concat = TreeUtils.reduceAfter(tree, concatArrayIds, array_concat);
     test.deepEqual(array_concat, [4, 5, 2, 3, 1], array_concat);
 
-
-
     test.end();
-
-
 });
 
 
@@ -184,14 +184,12 @@ tape("Test reduceBefore", function (test) {
     var array_concat = [];
     array_concat = TreeUtils.reduceBefore(tree, concatArrayIds, array_concat);
     test.deepEqual(array_concat, [1, 2, 4, 5, 3]);
+
     test.end();
-
-
 });
 
 
 tape("Test filter nodes", (test) => {
-
     var tree = { id: 1, children: [{ id: 2, children: [{ id: 4 }, { id: 5 }] }, { id: 3 }] };
     const TreeUtils = phylotree_utils.utils();
 
@@ -208,14 +206,12 @@ tape("Test filter nodes", (test) => {
         return node.id;
     });
     test.deepEqual(res2, [4, 5, 3]);
-    test.end();
 
+    test.end();
 });
 
 
 tape("Test each ancestor", (test) => {
-
-
     const node5 = { id: 5 };
     const node3 = { id: 3 };
     var tree = { id: 1, children: [{ id: 2, children: [{ id: 4 }, node5] }, node3] };
@@ -235,13 +231,10 @@ tape("Test each ancestor", (test) => {
     test.deepEqual(ancestor_record, [3, 1]);
 
     test.end();
-
 });
 
 
 tape("Test reduce ancestor", (test) => {
-
-
     const node5 = { id: 5 };
     const node3 = { id: 3 };
     var tree = { id: 1, children: [{ id: 2, children: [{ id: 4 }, node5] }, node3] };
@@ -256,7 +249,6 @@ tape("Test reduce ancestor", (test) => {
     test.deepEqual(res, [5, 2, 1]);
 
     test.end();
-
 });
 
 
@@ -274,7 +266,6 @@ tape("Test Filter ancestor", (test) => {
 
     test.deepEqual(res, [1]);
 
-
     // Get nextToLast
     const res2 = TreeUtils.filterAncestor(node5, (parent) => {
         if (parent.parent) {
@@ -287,7 +278,6 @@ tape("Test Filter ancestor", (test) => {
         return node.id;
     });
     test.deepEqual(res2, [2]);
-
 
     const res3 = TreeUtils.filterAncestor(node3, (parent) => {
         if (parent.parent) {
@@ -302,7 +292,6 @@ tape("Test Filter ancestor", (test) => {
     test.deepEqual(res3, [3]);
 
     test.end();
-
 });
 
 
@@ -338,9 +327,7 @@ tape("Test root tree", (test) => {
     const array_concat_1 = TreeUtils.reduceBefore(new_root_1, concatArrayIds, []);
     test.deepEqual(array_concat_2, [1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13], "Tree get the right topology");
 
-
     test.end();
-
 });
 
 
@@ -357,9 +344,7 @@ tape("Test reduceAfterLeft", (test) => {
     }, null);
     test.deepEqual(left_node.id, 4, "Get the left node");
 
-
     test.end();
-
 });
 
 
@@ -376,7 +361,5 @@ tape("Test reduceAfterRight", (test) => {
     }, null);
     test.deepEqual(node.id, 13, "Get the left node");
 
-
     test.end();
-
 });
