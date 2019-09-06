@@ -296,6 +296,8 @@ tape("Test Filter ancestor", (test) => {
 
 
 tape("Test root tree", (test) => {
+
+    // First test: root on node 7
     const tree_a = getBigTree();
     const TreeUtils = phylotree_utils.utils();
     const array_concat = TreeUtils.reduceBefore(tree_a, concatArrayIds, []);
@@ -308,7 +310,7 @@ tape("Test root tree", (test) => {
     test.deepEqual(array_concat_7, [1, 7, 8, 6, 2, 3, 4, 5, 9, 10, 11, 12, 13], "Root on the node 7 branch");
 
 
-    // New tree
+    // Second test: root on node 2
     const tree_b = getBigTree();
     const node2 = (TreeUtils.filter(tree_b, (node) => node.id === 2))[0];
     test.equal(node2.id, 2, "Get the node 2");
@@ -317,8 +319,7 @@ tape("Test root tree", (test) => {
     const array_concat_2 = TreeUtils.reduceBefore(new_root_2, concatArrayIds, []);
     test.deepEqual(array_concat_2, [1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13], "Root on node 2 OK");
 
-
-
+    // Third test: root on node 1
     const tree_c = getBigTree();
     const node1 = (TreeUtils.filter(tree_c, (node) => node.id === 1))[0];
     test.equal(node1.id, 1, "Get the node 1");
