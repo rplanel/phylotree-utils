@@ -295,15 +295,23 @@ tape("Test Filter ancestor", (test) => {
 });
 
 
+tape("Test getBigTree", (test) => {
+    const TreeUtils = phylotree_utils.utils();
+
+    const tree_a = getBigTree();
+    const array_concat = TreeUtils.reduceBefore(tree_a, concatArrayIds, []);
+    test.deepEqual(array_concat, [1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13], "Tree get the right topology");
+
+    test.end();
+});
+
+
 tape("Test root tree", (test) => {
     const TreeUtils = phylotree_utils.utils();
 
     // First test: root on node 7
     const tree_a = getBigTree();
-    const array_concat = TreeUtils.reduceBefore(tree_a, concatArrayIds, []);
-    test.deepEqual(array_concat, [1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13], "Tree get the right topology");
-
-    const node7 = (TreeUtils.filter(tree_a, (node) => node.id === 7))[0];
+     const node7 = (TreeUtils.filter(tree_a, (node) => node.id === 7))[0];
     test.equal(node7.id, 7, "Get the node 7");
     const new_root = TreeUtils.rootTree(node7, tree_a);
     const array_concat_7 = TreeUtils.reduceBefore(new_root, concatArrayIds, []);
@@ -314,7 +322,6 @@ tape("Test root tree", (test) => {
     const tree_b = getBigTree();
     const node2 = (TreeUtils.filter(tree_b, (node) => node.id === 2))[0];
     test.equal(node2.id, 2, "Get the node 2");
-    test.deepEqual(array_concat, [1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13], "Tree get the right topology");
     const new_root_2 = TreeUtils.rootTree(node2, tree_b);
     const array_concat_2 = TreeUtils.reduceBefore(new_root_2, concatArrayIds, []);
     test.deepEqual(array_concat_2, [1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13], "Root on node 2 OK");
@@ -323,7 +330,6 @@ tape("Test root tree", (test) => {
     const tree_c = getBigTree();
     const node1 = (TreeUtils.filter(tree_c, (node) => node.id === 1))[0];
     test.equal(node1.id, 1, "Get the node 1");
-    test.deepEqual(array_concat, [1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13], "Tree get the right topology");
     const new_root_1 = TreeUtils.rootTree(node1, tree_c);
     const array_concat_1 = TreeUtils.reduceBefore(new_root_1, concatArrayIds, []);
     test.deepEqual(array_concat_2, [1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13], "Tree get the right topology");
