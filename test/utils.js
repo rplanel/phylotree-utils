@@ -6,6 +6,10 @@ function concatArrayIds(acc, node) {
   return acc;
 }
 
+function termNode(id) {
+  return { id: id, children: [] };
+}
+
 function getBigTree() {
   const node7 = { id: 7 };
   const node2 = {
