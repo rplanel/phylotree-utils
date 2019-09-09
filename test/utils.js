@@ -6,6 +6,11 @@ function concatArrayIds(acc, node) {
 };
 
 
+function termNode(id) {
+    return { id: id, children: [] }
+}
+
+
 function getBigTree() {
     const node7 = { id: 7 };
     const node2 = {
@@ -57,6 +62,51 @@ function getBigTree() {
             }
         ]
     };
+}
+
+
+function getTestTree1() {
+    return {
+        children: [
+            {
+                children: [
+                    {
+                        children: [
+                            termNode("Roseo1"),
+                            termNode("Roseo2")
+                        ]
+                    },
+                    termNode("Rhizo")
+                ]
+            },
+            termNode("outgroup")
+        ]
+    }
+}
+
+
+function getTestTree2() {
+    return {
+        children: [
+            {
+                children: [
+                    termNode("Roseo1"),
+                    termNode("Roseo2")
+                ]
+            },
+            {
+                children: [
+                    {
+                        children: [
+                            termNode("Rhizo"),
+                            termNode("Pseudo")
+                        ]
+                    },
+                    termNode("outgroup")
+                ]
+            }
+        ]
+    }
 }
 
 
@@ -337,6 +387,30 @@ tape("Test root tree", (test) => {
         const new_root_1 = TreeUtils.rootTree(node1, tree_c);
         const array_concat_1 = TreeUtils.reduceBefore(new_root_1, concatArrayIds, []);
         test.deepEqual(array_concat_1, TreeUtils.reduceBefore(getBigTree(), concatArrayIds, []), "Root on node 1 branch");
+    }
+
+    // Fourth test
+    {
+        const tree = getTestTree1();
+        const outgroup = (TreeUtils.filter(tree, (node) => node.id === "outgroup"))[0];
+        test.equal(outgroup.id, "outgroup", "Get the outgroup");
+        const new_root = TreeUtils.rootTree(outgroup, tree);
+        const empty_parent = TreeUtils.filter(new_root, (node) => {
+            if (node.parent) { return node.parent == null } else { return true };
+        });
+        test.equal(empty_parent.length, 1, "No non-parent node inside tree");
+    }
+
+    // Fifth test
+    {
+        const tree = getTestTree2();
+        const outgroup = (TreeUtils.filter(tree, (node) => node.id === "outgroup"))[0];
+        test.equal(outgroup.id, "outgroup", "Get the outgroup");
+        const new_root = TreeUtils.rootTree(outgroup, tree);
+        const empty_parent = TreeUtils.filter(new_root, (node) => {
+            if (node.parent) { return node.parent == null } else { return true };
+        });
+        test.equal(empty_parent.length, 1, "No non-parent node inside tree");
     }
 
     test.end();
