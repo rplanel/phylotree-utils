@@ -1,6 +1,6 @@
 const tape = require("tape");
 var phylotree_utils = require("../build/phylotree-utils.js");
-// var phylotree_utils = require("../");
+
 function concatArrayIds(acc, node) {
   acc.push(node.id);
   return acc;
