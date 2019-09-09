@@ -1,6 +1,6 @@
 {
     "name": "phylotree-utils",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Set of functions facilitating manipulation and traversal of trees.",
     "main": "index.js",
     "module": "index",
