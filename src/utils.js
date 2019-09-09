@@ -226,6 +226,9 @@ export default function(children) {
         // Switch parent child
         switchParentChild(new_root.parent, new_root_node);
         new_root.parent = new_root_node;
+
+        // Repair parent
+        self.addParent(new_root_node);
         return new_root_node;
       } else {
         throw {
