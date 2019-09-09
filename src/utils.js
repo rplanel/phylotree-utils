@@ -218,9 +218,9 @@ export default function(children) {
         ) {
           return el === new_root;
         });
+
         if (new_root_child_index !== -1) {
           new_root.parent.children[new_root_child_index] = new_root_node;
-        } else {
         }
 
         // Switch parent child
