@@ -1,6 +1,6 @@
 {
     "name": "phylotree-utils",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Set of functions facilitating manipulation and traversal of trees.",
     "main": "index.js",
     "module": "index",
@@ -13,9 +13,10 @@
         "pretest": "rm -rf build && mkdir build && rollup -f umd -n phylotree-utils -o build/phylotree-utils.js -- index.js",
         "test": "tape 'test/**/*.js'",
         "watch": "rollup -c --watch",
+        "prepare": "npm run build",
         "prepublishOnly": "npm run build && npm run lint && npm run test",
         "preversion": "npm run lint",
-        "version": "git Add -A src",
+        "version": "git add -A src",
         "postversion": "git push && git push --tags",
         "lint": "eslint src"
     },
