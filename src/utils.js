@@ -22,6 +22,7 @@ export default function(children) {
       callback(children[0]);
     }
   }
+
   function forRightChildren(node, callback) {
     var children = getChildren(node);
     if (children) {
@@ -205,9 +206,7 @@ export default function(children) {
         next_to_last_sibling.parent = null;
         next_to_last.parent = next_to_last_sibling;
 
-        // Remove outgroup as
-
-        // 2. traverse the tree from the new root and modify topology.
+        // Create the new_root_node
         var new_root_node = {
           id: tree.id,
           children: [new_root, new_root.parent]
@@ -223,8 +222,13 @@ export default function(children) {
         if (new_root_child_index !== -1) {
           new_root.parent.children[new_root_child_index] = new_root_node;
         }
+
+        // Switch parent child
         switchParentChild(new_root.parent, new_root_node);
         new_root.parent = new_root_node;
+
+        // Repair parent
+        self.addParent(new_root_node);
         return new_root_node;
       } else {
         throw {

@@ -1,9 +1,13 @@
 const tape = require("tape");
 var phylotree_utils = require("../build/phylotree-utils.js");
-// var phylotree_utils = require("../");
+
 function concatArrayIds(acc, node) {
   acc.push(node.id);
   return acc;
+}
+
+function termNode(id) {
+  return { id: id, children: [] };
 }
 
 function getBigTree() {
@@ -53,6 +57,40 @@ function getBigTree() {
             ]
           },
           node13
+        ]
+      }
+    ]
+  };
+}
+
+function getTestTree1() {
+  return {
+    children: [
+      {
+        children: [
+          {
+            children: [termNode("Roseo1"), termNode("Roseo2")]
+          },
+          termNode("Rhizo")
+        ]
+      },
+      termNode("outgroup")
+    ]
+  };
+}
+
+function getTestTree2() {
+  return {
+    children: [
+      {
+        children: [termNode("Roseo1"), termNode("Roseo2")]
+      },
+      {
+        children: [
+          {
+            children: [termNode("Rhizo"), termNode("Pseudo")]
+          },
+          termNode("outgroup")
         ]
       }
     ]
@@ -306,10 +344,10 @@ tape("Test Filter ancestor", test => {
   test.end();
 });
 
-tape("Test root tree", test => {
-  // First test: root on node 7
-  const tree_a = getBigTree();
+tape("Test getBigTree", test => {
   const TreeUtils = phylotree_utils.utils();
+
+  const tree_a = getBigTree();
   const array_concat = TreeUtils.reduceBefore(tree_a, concatArrayIds, []);
   test.deepEqual(
     array_concat,
@@ -317,48 +355,97 @@ tape("Test root tree", test => {
     "Tree get the right topology"
   );
 
-  const node7 = TreeUtils.filter(tree_a, node => node.id === 7)[0];
-  test.equal(node7.id, 7, "Get the node 7");
-  const new_root = TreeUtils.rootTree(node7, tree_a);
-  const array_concat_7 = TreeUtils.reduceBefore(new_root, concatArrayIds, []);
-  test.deepEqual(
-    array_concat_7,
-    [1, 7, 8, 6, 2, 3, 4, 5, 9, 10, 11, 12, 13],
-    "Root on the node 7 branch"
-  );
+  test.end();
+});
+
+tape("Test root tree", test => {
+  const TreeUtils = phylotree_utils.utils();
+
+  // First test: root on node 7
+  {
+    const tree_a = getBigTree();
+    const node7 = TreeUtils.filter(tree_a, node => node.id === 7)[0];
+    test.equal(node7.id, 7, "Get the node 7");
+    const new_root_7 = TreeUtils.rootTree(node7, tree_a);
+    const array_concat_7 = TreeUtils.reduceBefore(
+      new_root_7,
+      concatArrayIds,
+      []
+    );
+    test.deepEqual(
+      array_concat_7,
+      [1, 7, 8, 6, 2, 3, 4, 5, 9, 10, 11, 12, 13],
+      "Root on the node 7 branch"
+    );
+  }
 
   // Second test: root on node 2
-  const tree_b = getBigTree();
-  const node2 = TreeUtils.filter(tree_b, node => node.id === 2)[0];
-  test.equal(node2.id, 2, "Get the node 2");
-  test.deepEqual(
-    array_concat,
-    [1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13],
-    "Tree get the right topology"
-  );
-  const new_root_2 = TreeUtils.rootTree(node2, tree_b);
-  const array_concat_2 = TreeUtils.reduceBefore(new_root_2, concatArrayIds, []);
-  test.deepEqual(
-    array_concat_2,
-    [1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13],
-    "Root on node 2 OK"
-  );
+  {
+    const tree_b = getBigTree();
+    const node2 = TreeUtils.filter(tree_b, node => node.id === 2)[0];
+    test.equal(node2.id, 2, "Get the node 2");
+    const new_root_2 = TreeUtils.rootTree(node2, tree_b);
+    const array_concat_2 = TreeUtils.reduceBefore(
+      new_root_2,
+      concatArrayIds,
+      []
+    );
+    test.deepEqual(
+      array_concat_2,
+      [1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13],
+      "Root on node 2 branch"
+    );
+  }
 
-  // Third test: root on node 1
-  const tree_c = getBigTree();
-  const node1 = TreeUtils.filter(tree_c, node => node.id === 1)[0];
-  test.equal(node1.id, 1, "Get the node 1");
-  test.deepEqual(
-    array_concat,
-    [1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13],
-    "Tree get the right topology"
-  );
+  // Third test: root on node 1 (i.e. no change)
+  {
+    const tree_c = getBigTree();
+    const node1 = TreeUtils.filter(tree_c, node => node.id === 1)[0];
+    test.equal(node1.id, 1, "Get the node 1");
+    const new_root_1 = TreeUtils.rootTree(node1, tree_c);
+    const array_concat_1 = TreeUtils.reduceBefore(
+      new_root_1,
+      concatArrayIds,
+      []
+    );
+    test.deepEqual(
+      array_concat_1,
+      TreeUtils.reduceBefore(getBigTree(), concatArrayIds, []),
+      "Root on node 1 branch"
+    );
+  }
 
-  test.deepEqual(
-    array_concat_2,
-    [1, 2, 3, 4, 5, 8, 6, 7, 9, 10, 11, 12, 13],
-    "Tree get the right topology"
-  );
+  // Fourth test
+  {
+    const tree = getTestTree1();
+    const outgroup = TreeUtils.filter(tree, node => node.id === "outgroup")[0];
+    test.equal(outgroup.id, "outgroup", "Get the outgroup");
+    const new_root = TreeUtils.rootTree(outgroup, tree);
+    const empty_parent = TreeUtils.filter(new_root, node => {
+      if (node.parent) {
+        return node.parent == null;
+      } else {
+        return true;
+      }
+    });
+    test.equal(empty_parent.length, 1, "No non-parent node inside tree");
+  }
+
+  // Fifth test
+  {
+    const tree = getTestTree2();
+    const outgroup = TreeUtils.filter(tree, node => node.id === "outgroup")[0];
+    test.equal(outgroup.id, "outgroup", "Get the outgroup");
+    const new_root = TreeUtils.rootTree(outgroup, tree);
+    const empty_parent = TreeUtils.filter(new_root, node => {
+      if (node.parent) {
+        return node.parent == null;
+      } else {
+        return true;
+      }
+    });
+    test.equal(empty_parent.length, 1, "No non-parent node inside tree");
+  }
 
   test.end();
 });
